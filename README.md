@@ -19,3 +19,12 @@ This project uses the D4RL MuJoCo dataset for benchmarking. The supported enviro
 3. **Hopper**: A 2D monoped with the goal of hopping.
 
 These environments provide static datasets for offline RL research. They are all stochastic in terms of their initial state, with a Gaussian noise added to a fixed initial state in order to add stochasticity.
+
+### Set-up
+Environment set-up extends PyTorch's Dataset and integrates it with Gym environments to load and preprocess offline datasets (e.g., D4RL). Key features include: 
+1. **Data Loading & Preprocessing**: Loads observations, actions, rewards, next states, and done flags from the dataset. Supports dataset subsetting for efficient training and testing.
+2. Optional **normalization** for states and rewards to enhance model stability and learning efficiency. State Normalization shifts and scales observations and next states using dataset statistics. Reward Normalization rescales rewards to [0, 1] for consistent training objectives.
+3. The **reset** method is called at the start of each episode to initialize the environment.
+4. The **step** method is called repeatedly during an episode to sample transitions until the done flag is true or the dataset is exhausted.
+
+## Proposed Method
