@@ -11,9 +11,7 @@ decision-making and optimizing outcomes.
 * **'dataset'** : scripts to install dependencies, download datasets and set-up the environment
 * **'model'** : all sub-networks and models needed to achieve our task 
 * **'results'** : plots of chosen metrics 
-* **'main.py'** :  script to train and test the model 
 * **'MOPP_with_pretraining.ipynb'** : our runnable network. It contains all components used to complete the required task. It was trained and tested on "kaggle" using GPU-P100
-* **'options.py'** : parser options for both train and test so to adjust parameters when needed 
 * **'utils.py'**: script containing all the extra functions we needed in our notebook
 
 

@@ -1,17 +1,6 @@
-# All necessary imports
 import os
-import gym
 import numpy as np 
 import torch 
-from torch.utils.data import Dataset 
-import matplotlib.pyplot as plt
-import torch.nn as nn
-import torch.distributions as dist
-from torch.optim import Adam
-from torch.utils.data import DataLoader, TensorDataset
-import collections
-from torch.cuda.amp import autocast
-import torch.distributions as dist
 import json
 
 
@@ -27,6 +16,7 @@ def load_pretrained_ensemble(ensemble, pretrained_paths, optimizers, device):
         else:
             print(f"No pretrained model provided for model {i + 1}. Training from scratch.")
 
+
 def initialize_ensemble_with_pretrained(ensemble, pretrained_paths, optimizers, device):
     for i, (model, optimizer, pretrained_path) in enumerate(zip(ensemble.models, optimizers, pretrained_paths)):
         model.to(device)
@@ -37,6 +27,7 @@ def initialize_ensemble_with_pretrained(ensemble, pretrained_paths, optimizers, 
             print(f"Pretrained model {i + 1} loaded from {pretrained_path}.")
         else:
             print(f"No pretrained model provided for model {i + 1}. Training from scratch.")
+
 
 def evaluate_value_function_ensemble(q_networks, state, behavior_policies, num_samples=10):
     """
@@ -58,6 +49,7 @@ def evaluate_value_function_ensemble(q_networks, state, behavior_policies, num_s
             total_value += q_network(state, action).item()
 
     return total_value / (len(q_networks) * num_samples)  # Average over all models and samples
+
 
 def perform_max_q_operation(q_networks, behavior_policies, state, num_samples=10):
     """
@@ -85,6 +77,7 @@ def perform_max_q_operation(q_networks, behavior_policies, state, num_samples=10
                 best_action = action
 
     return best_action
+
 
 def eval_policy_episodes(env, policy, n_episodes, device):
     results = []
@@ -126,6 +119,7 @@ def eval_policy_episodes(env, policy, n_episodes, device):
 
     results = np.array(results)
     return float(np.mean(results)), float(np.std(results)), results
+
 
 def save_results(results, save_dir, save_format="json"):
     os.makedirs(save_dir, exist_ok=True)  # Ensure the directory exists
