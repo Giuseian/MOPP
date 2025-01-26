@@ -7,10 +7,8 @@ Offline RL is a branch of reinforcement learning where the policy is learned fro
 Our work focuses on implementing a Model-Based Offline Planning algorithm. Specifically, it conducts trajectory rollouts guided by a behavior policy learned directly from data. The algorithm identifies and prunes problematic trajectories to minimize out-of-distribution (OOD) actions, improving 
 decision-making and optimizing outcomes.
 
-### Key Features
-- **Autoregressive Dynamics Model** (ADM): It learns the environmet’s behavior by predicting its response to different actions.
-- **Q-Value Network**: Guides the policy to estimate the value of various state-action pairs
-- **Trajectory Optimization and Pruning**: Generates and refines action sequences to maximize rewards while managing uncertainty.
+## Repository Content
+
 
 ## Environments
 This project uses the D4RL MuJoCo dataset for benchmarking. The supported environments include:
@@ -28,3 +26,115 @@ Environment set-up extends PyTorch's Dataset and integrates it with Gym environm
 4. The **step** method is called repeatedly during an episode to sample transitions until the done flag is true or the dataset is exhausted.
 
 ## Proposed Method
+Our approach integrates key components that together create a powerful framework for offline reinforcement learning. Below, we outline the main elements of our method:
+
+### 1. Autoregressive Dynamics Model (ADM)
+
+The **Autoregressive Dynamics Model** (ADM) predicts the environment's response to actions by modeling the dynamics and behavior policy. It is designed to:
+
+- **Probabilistic Dynamics Modeling**: Predicts the next state and reward based on the current state and action
+- **Behavior Policy Modeling**: Estimates the optimal action given the current state
+
+**Key Features:**
+- Supports **non-unimodal dependencies** in data.
+- Uses a **unified neural network architecture** to:
+  - Predict actions (mean and variance) and dynamics (next state and reward).
+  - Model outputs as Normal distributions for sampling and log-likelihood calculations.
+- Leverages an **ensemble of ADM models** with diverse output orderings for robustness and reliability.
+
+### 2. Q-Value Network
+
+The **Q-Value Network** estimates the cumulative future rewards for state-action pairs under the behavior policy. It leverages **Fitted Q Evaluation (FQE)** to iteratively train the Q-function by minimizing the difference between predicted Q-values and target values.
+The Q-function is further used to evaluate the value function.
+This conservative estimation guides policy optimization while managing uncertainty.
+
+### 3. Model-Based Offline Planning with MOPP
+
+**MOPP** is a **Model-Based Offline Planning and Pruning** framework designed to optimize action sequences for high-reward trajectories. It integrates:
+- **Diverse Action Sampling**: Samples actions with increased variance from the behavior policy.
+- **Max-Q Selection**: Chooses actions with the highest Q-values for long-term reward optimization.
+- **Trajectory Optimization and Pruning**:
+  - Retains high-value, low-uncertainty trajectories using an ensemble disagreement measure.
+  - Refines trajectories using a gradient-free trajectory optimization method, extending finite-horizon MPC.
+
+## Metrics and Results 
+The performance of our method was evaluated by using **Mean** and **Standard Deviation**.
+
+Below we report some of the results we have achieved:
+- Hopper
+<table>
+  <tr>
+    <td style="text-align: center;">
+      <img src="results/hopper_random.png" width="300" height="auto" alt="ours_eth_FDE_100">
+      <p><strong>RANDOM</strong></p>
+    </td>
+    <td style="text-align: center;">
+      <img src="results/hopper_medium.png" width="300" height="auto" alt="ours_eth_ADE_100">
+      <p><strong>MEDIUM</strong></p>
+    </td>
+  </tr>
+</table>
+
+- Half Cheetah
+<table>
+  <tr>
+    <td style="text-align: center;">
+      <img src="results/halfcheetah_random.png" width="300" height="auto" alt="ours_eth_FDE_100">
+      <p><strong>RANDOM</strong></p>
+    </td>
+    <td style="text-align: center;">
+      <img src="results/halfcheetah_medium.png" width="300" height="auto" alt="ours_eth_ADE_100">
+      <p><strong>MEDIUM</strong></p>
+    </td>
+  </tr>
+</table>
+
+- Walker2D
+<table>
+  <tr>
+    <td style="text-align: center;">
+      <img src="results/walker2d_random.png" width="300" height="auto" alt="ours_eth_FDE_100">
+      <p><strong>RANDOM</strong></p>
+    </td>
+    <td style="text-align: center;">
+      <img src="results/walker2d_medium.png" width="300" height="auto" alt="ours_eth_ADE_100">
+      <p><strong>MEDIUM</strong></p>
+    </td>
+  </tr>
+</table>
+
+
+## Final Observations and Future Works
+Despite limited training time with respect to the SOTA works, the results were promising, showing the algorithm's ability to balance exploration and exploitation while avoiding out-of-distribution actions. Looking ahead, exploring more sophisticated rollout strategies could further improve the quality and diversity of the generated trajectories, leading to better performance. Additionally, testing the method on new datasets, such as Androit, and experimenting with more complex MuJoCo environments, including mixed and medium-expert scenarios, could provide deeper insights into the adaptability and robustness of the approach. These steps will help improve the algorithm and make it useful for a wider range of offline reinforcement learning tasks.
+
+## Acknowledgments
+- The original Paper
+
+```bib
+@article{zhan2021model,
+  title={Model-based offline planning with trajectory pruning},
+  author={Zhan, Xianyuan and Zhu, Xiangyu and Xu, Haoran},
+  journal={arXiv preprint arXiv:2105.07351},
+  year={2021}
+}
+```
+
+- Other related works
+```bib
+@article{argenson2020model,
+  title={Model-based offline planning},
+  author={Argenson, Arthur and Dulac-Arnold, Gabriel},
+  journal={arXiv preprint arXiv:2008.05556},
+  year={2020}
+}
+```
+```bib
+@article{yu2020mopo,
+  title={Mopo: Model-based offline policy optimization},
+  author={Yu, Tianhe and Thomas, Garrett and Yu, Lantao and Ermon, Stefano and Zou, James Y and Levine, Sergey and Finn, Chelsea and Ma, Tengyu},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={14129--14142},
+  year={2020}
+}
+```
